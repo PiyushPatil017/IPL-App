@@ -10,9 +10,6 @@ players = requests.get("http://127.0.0.1:7000/player_name").json()
 season = requests.get('http://127.0.0.1:7000/seasons').json()
 teams = requests.get('http://127.0.0.1:7000/ipl_teams').json()
 
-# to change state of main screen as required
-if 'step' not in st.session_state:
-    st.session_state.step = 0
 
 st.sidebar.title('IPL Data')
 option1 = st.sidebar.selectbox('Select option',options = ['IPL Records','Team Records','Player Records'],
@@ -27,7 +24,6 @@ elif option1 == 'Player Records':
 
 btn1 = st.sidebar.button('Select')
 if btn1:
-    st.session_state.step = 1
     if option1 == 'IPL Records':
         st.title('IPL Records')
 
@@ -70,11 +66,3 @@ if btn1:
 
     elif option1 == 'Player Records':
         st.title('{}'.format(player_option))
-
-# Option to choose another team and stats against them
-if st.session_state.step == 1:
-    team2_option = st.sidebar.selectbox('Select team to show stats against them', options=teams)
-    team_btn2 = st.sidebar.button('Analyze')
-    if team_btn2:
-        st.session_state.step = 2
-        st.title(team2_option)
