@@ -44,6 +44,7 @@ if btn1:
         st.session_state.player = player_option
     else:
         st.sidebar.warning('Please make a selection')
+    st.rerun()
 
 # when this season option is choosed this will be displayed on screen
 if st.session_state.screen == 'season_screen':
@@ -64,13 +65,14 @@ elif st.session_state.screen in ['team_screen','team_vs_team_screen']:
     # when only 1 team is selected overall and season wise stat is displayed
     if st.session_state.screen == 'team_screen':
         # request data from api
-        team_record = requests.get('http://127.0.0.1:7000/team',params={'team': team1})
-        data = team_record.json()
+        data = requests.get('http://127.0.0.1:7000/team',params={'team': team1}).json()
+
 
         # Overall Stats
         overall_df = pd.DataFrame(data['Overall'],index = [0])
         trophy = overall_df['Trophys'].values
         years = overall_df['trophy_years'].values[0]
+        # display trophy logo and years in which trophy won
         if trophy > 0:
             col1,col2 = st.columns([0.1,0.9],vertical_alignment='center')
             with col1:
@@ -89,20 +91,29 @@ elif st.session_state.screen in ['team_screen','team_vs_team_screen']:
         season_df.reset_index(names='Season', inplace =True)
         st.dataframe(data = season_df, hide_index=True, column_order=['Season','Matches','Won','Loss','Draw'])
 
-        # Option for team vs team
-        team2_option = st.sidebar.selectbox('Select Team to Compare Against',options = teams, key = 'team2_selector')
-        team_btn = st.sidebar.button('Compare')
-        if team_btn:
-            st.session_state.screen = 'team_vs_team_screen'
-            st.session_state.team2 = team2_option
-            st.rerun()
+    # Option for team vs team
+    st.sidebar.divider()
+    team2_option = st.sidebar.selectbox('Select Team to Compare Against',options = teams, key = 'team2_selector')
+    team_btn = st.sidebar.button('Compare')
+    if team_btn:
+        st.session_state.screen = 'team_vs_team_screen'
+        st.session_state.team2 = team2_option
+        st.rerun()
 
     # This screen displays stat of team1 against team2
     if st.session_state.screen == 'team_vs_team_screen':
         team2 = st.session_state.team2
-        st.title(team1 + " vs " + team2)
+        if team1 != team2:
+            st.title(team1 + " vs " + team2)
+            response = requests.get('http://127.0.0.1:7000/team_vs_team', params = {'team1':team1, 'team2': team2}).json()
+            df = pd.DataFrame(response).T
+            df.reset_index(names = 'Teams',inplace = True)
+            st.dataframe(df,hide_index = True)
+            # st.bar_chart(x=df['won'], y= df['won'])
+        else:
+            st.warning('Please select different team')
 
-# If player option is choosed this will be displayed on screen
+# If player option is chose this will be displayed on screen
 elif st.session_state.screen == 'player_screen':
     player = st.session_state.player
     st.title(player)
