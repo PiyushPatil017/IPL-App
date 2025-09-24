@@ -3,6 +3,7 @@ import numpy as np
 import streamlit as st
 import requests
 from PIL import Image
+import json
 
 st.set_page_config('IPL App', layout='wide')
 
@@ -103,4 +104,22 @@ elif st.session_state.screen in ['team_screen','team_vs_team_screen']:
 
 # If player option is choosed this will be displayed on screen
 elif st.session_state.screen == 'player_screen':
-    st.title('player')
+    player = st.session_state.player
+    st.title(player)
+
+    # player obtained from selectbox contains full name while our dataset has short name. so we send short name in request
+    with open('players_names.json') as rf:
+        data = json.load(rf)
+    player = data[player]
+
+    # Send API Request
+    response = requests.get('http://127.0.0.1:7000/player_record',params = {'player':player}).json()
+
+    # create DataFrame
+    overall_batting = pd.DataFrame(response['Overall Record']['Batting'], index = [0])
+    overall_batting.rename(index = {0:'Overall'}, inplace = True)
+    season_batting = pd.DataFrame(response['Batting']['Season']).T
+    season_batting.sort_index(ascending=False,inplace = True)
+    df_batting =pd.concat([overall_batting,season_batting])
+    df_batting = df_batting.fillna('-')
+    st.dataframe(df_batting)
