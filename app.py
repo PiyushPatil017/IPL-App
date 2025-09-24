@@ -115,11 +115,23 @@ elif st.session_state.screen == 'player_screen':
     # Send API Request
     response = requests.get('http://127.0.0.1:7000/player_record',params = {'player':player}).json()
 
-    # create DataFrame
-    overall_batting = pd.DataFrame(response['Overall Record']['Batting'], index = [0])
+    # create DataFrame for Batting
+    st.subheader('Batting Statistics')
+    overall_batting = pd.DataFrame(response['Batting']['Overall Record'], index = [0])
     overall_batting.rename(index = {0:'Overall'}, inplace = True)
     season_batting = pd.DataFrame(response['Batting']['Season']).T
     season_batting.sort_index(ascending=False,inplace = True)
     df_batting =pd.concat([overall_batting,season_batting])
     df_batting = df_batting.fillna('-')
     st.dataframe(df_batting)
+
+    st.divider()
+    # create DataFrame for Bowling
+    st.subheader('Bowling Statistics')
+    overall_bowling = pd.DataFrame(response['Bowling']['Overall Record'], index=[0])
+    overall_bowling.rename(index={0: 'Overall'}, inplace=True)
+    season_bowling = pd.DataFrame(response['Bowling']['Season']).T
+    season_bowling.sort_index(ascending=False, inplace=True)
+    df_bowling = pd.concat([overall_bowling, season_bowling])
+    df_bowling = df_bowling.fillna('-')
+    st.dataframe(df_bowling)
