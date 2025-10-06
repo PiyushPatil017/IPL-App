@@ -117,7 +117,7 @@ elif st.session_state.screen in ['team_screen','team_vs_team_screen']:
 elif st.session_state.screen == 'player_screen':
     player = st.session_state.player
     st.title(player)
-    first_name,*others,last_name = player.split(" ")
+    first_name, *others, last_name = player.split(" ")
     st.page_link('https://en.wikipedia.org/wiki/{}_{}'.format(first_name,last_name),label=f'About {player}')
 
     # player obtained from selectbox contains full name while our dataset has short name. so we send short name in request
