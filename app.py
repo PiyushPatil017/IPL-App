@@ -4,6 +4,10 @@ import streamlit as st
 import requests
 from PIL import Image
 import json
+import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
+
 
 st.set_page_config('IPL App', layout='wide')
 
@@ -138,6 +142,14 @@ elif st.session_state.screen == 'player_screen':
     df_batting = df_batting.fillna('-')
     st.dataframe(df_batting)
 
+    # visualize the Batting records
+    btn_bat_viz = st.button('Visualize Batting Stats')
+    if btn_bat_viz:
+        temp_batting = df_batting.iloc[1:].sort_index(ascending=True)
+        fig = px.bar(temp_batting, x=temp_batting.index, y='Runs', text_auto=True, labels={'index': 'Season'},
+                     title='Runs Scored in Each Season',height=600,width = 700)
+        st.plotly_chart(fig)
+
     st.divider()
     # create DataFrame for Bowling
     st.subheader('Bowling Statistics')
@@ -148,3 +160,12 @@ elif st.session_state.screen == 'player_screen':
     df_bowling = pd.concat([overall_bowling, season_bowling])
     df_bowling = df_bowling.fillna('-')
     st.dataframe(df_bowling)
+
+    # visualize the Bowling records
+    btn_bowl_viz = st.button('Visualize Bowling Stats')
+    if btn_bowl_viz:
+        # bar chart for runs in each season
+        temp_bowling = df_bowling.iloc[1:].sort_index(ascending=True)
+        fig = px.bar(temp_bowling, x=temp_bowling.index, y='Wickets', text_auto=True, labels={'index': 'Season'},
+                     title='Wickets Taken in Each Season', height=600, width=700)
+        st.plotly_chart(fig)
