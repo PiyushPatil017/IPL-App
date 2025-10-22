@@ -123,7 +123,7 @@ elif st.session_state.screen in ['player_screen','player_compare_screen']:
         player = st.session_state.player
         st.title(player)
         first_name, *others, last_name = player.split(" ")
-        st.page_link('https://en.wikipedia.org/wiki/{}_{}'.format(first_name,last_name),label=f'About {player}')
+        st.page_link('https://en.wikipedia.org/wiki/{}_{}'.format(first_name,last_name),label=f'About {player}', icon = 'ℹ️')
 
         # player obtained from selectbox contains full name while our dataset has short name. so we send short name in request
         with open('players_names.json') as rf:
