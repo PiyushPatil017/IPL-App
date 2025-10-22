@@ -141,14 +141,16 @@ elif st.session_state.screen in ['player_screen','player_compare_screen']:
         season_batting.sort_index(ascending=False,inplace = True)
         df_batting =pd.concat([overall_batting,season_batting])
         df_batting = df_batting.fillna('-')
-        st.dataframe(df_batting)
+        # height parameter to show all rows at once
+        st.dataframe(df_batting, height = len(df_batting)*35 + 38)
 
         # visualize the Batting records
         btn_bat_viz = st.button('Visualize Batting Stats')
         if btn_bat_viz:
             temp_batting = df_batting.iloc[1:].sort_index(ascending=True)
-            fig = px.bar(temp_batting, x=temp_batting.index, y='Runs', text_auto=True, labels={'index': 'Season'},
+            fig = px.line(temp_batting, x=temp_batting.index, y='Runs', text='Runs', labels={'index': 'Season'},
                          title='Runs Scored in Each Season',height=600,width = 700)
+            fig.update_traces(textposition = 'top center')
             st.plotly_chart(fig)
 
         # create DataFrame for Bowling
@@ -160,15 +162,16 @@ elif st.session_state.screen in ['player_screen','player_compare_screen']:
         season_bowling.sort_index(ascending=False, inplace=True)
         df_bowling = pd.concat([overall_bowling, season_bowling])
         df_bowling = df_bowling.fillna('-')
-        st.dataframe(df_bowling)
+        st.dataframe(df_bowling, height = len(df_bowling)*35 + 38)
 
         # visualize the Bowling records
         btn_bowl_viz = st.button('Visualize Bowling Stats')
         if btn_bowl_viz:
             # bar chart for runs in each season
             temp_bowling = df_bowling.iloc[1:].sort_index(ascending=True)
-            fig = px.bar(temp_bowling, x=temp_bowling.index, y='Wickets', text_auto=True, labels={'index': 'Season'},
+            fig = px.line(temp_bowling, x=temp_bowling.index, y='Wickets', labels={'index': 'Season'}, text = 'Wickets',
                          title='Wickets Taken in Each Season', height=600, width=700)
+            fig.update_traces(textposition = 'top center')
             st.plotly_chart(fig)
 
     # add option to compare with other players
@@ -185,7 +188,8 @@ elif st.session_state.screen in ['player_screen','player_compare_screen']:
     # Screen to show comparison of players
     elif st.session_state.screen == 'player_compare_screen':
         player_compare_list = st.session_state.player_compare_list
-        player_compare_dict = {}
+        player_compare_bat_dict = {}
+        player_compare_bowl_dict = {}
         title_str = ''
 
         # Loop to get data of players selected
@@ -197,13 +201,13 @@ elif st.session_state.screen in ['player_screen','player_compare_screen']:
 
             # Send API Request
             response = requests.get('http://127.0.0.1:7000/player_record', params={'player': player_full_name}).json()
-            player_compare_dict[player_name] = response['Batting']['Overall Record']
-
+            player_compare_bat_dict[player_name] = response['Batting']['Overall Record']
+            player_compare_bowl_dict[player_name] = response['Bowling']['Overall Record']
         # show dataframe and bar chart
-        player_compare_df = pd.DataFrame(player_compare_dict)
-        fig = px.bar(player_compare_df, x = player_compare_df.index, y = player_compare_df.columns, text_auto=True, barmode='group', log_y=True,
+        player_compare_bat_df = pd.DataFrame(player_compare_bat_dict)
+        fig = px.bar(player_compare_bat_df, x = player_compare_bat_df.index, y = player_compare_bat_df.columns, text_auto=True, barmode='group', log_y=True,
                      height=600, width = 900, labels = {'index':'Stat'}, title = 'Head to Head of Players')
         st.title(title_str[:-3])
-        st.dataframe(player_compare_df)
+        st.dataframe(player_compare_bat_df)
         st.divider()
         st.plotly_chart(fig)
