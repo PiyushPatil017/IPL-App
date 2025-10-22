@@ -203,11 +203,22 @@ elif st.session_state.screen in ['player_screen','player_compare_screen']:
             response = requests.get('http://127.0.0.1:7000/player_record', params={'player': player_full_name}).json()
             player_compare_bat_dict[player_name] = response['Batting']['Overall Record']
             player_compare_bowl_dict[player_name] = response['Bowling']['Overall Record']
-        # show dataframe and bar chart
+
+        # show dataframe and bar chart for batting stats
         player_compare_bat_df = pd.DataFrame(player_compare_bat_dict)
         fig = px.bar(player_compare_bat_df, x = player_compare_bat_df.index, y = player_compare_bat_df.columns, text_auto=True, barmode='group', log_y=True,
-                     height=600, width = 900, labels = {'index':'Stat'}, title = 'Head to Head of Players')
+                     height=600, width = 900, labels = {'index':'Stat'}, title = 'Batting Head to Head of Players')
         st.title(title_str[:-3])
+        st.subheader('Batting Statistics')
         st.dataframe(player_compare_bat_df)
+        st.plotly_chart(fig)
         st.divider()
+
+        # show dataframe and bar chart for bowling stats
+        player_compare_bowl_df = pd.DataFrame(player_compare_bowl_dict)
+        fig = px.bar(player_compare_bowl_df, x=player_compare_bowl_df.index, y=player_compare_bowl_df.columns,
+                     text_auto=True, barmode='group', log_y=True,
+                     height=600, width=900, labels={'index': 'Stat'}, title='Bowling Head to Head of Players')
+        st.subheader('Bowling Statistics')
+        st.dataframe(player_compare_bowl_df)
         st.plotly_chart(fig)
