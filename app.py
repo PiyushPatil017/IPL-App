@@ -23,6 +23,8 @@ option1 = st.sidebar.selectbox('Select option',options = ['IPL Records','Team Re
 
 # take first option from sidebar
 if option1 == 'IPL Records':
+    season = season[::-1]
+    season.insert(0,'Overall')
     season_option = st.sidebar.selectbox('Select Season', options = season)
 elif option1 == 'Team Records':
     team_option = st.sidebar.selectbox('Select Team',options = teams)
@@ -48,7 +50,10 @@ if btn1:
 
 # when this season option is choosed this will be displayed on screen
 if st.session_state.screen == 'season_screen':
-    st.title('Season')
+    season = st.session_state.season
+    st.title('{} Record'.format(season))
+    response = requests.get('http://127.0.0.1:7000/season_winner')
+    st.dataframe(response.json())
 
 # if team option is choosed this will be displayed on screen
 elif st.session_state.screen in ['team_screen','team_vs_team_screen']:
