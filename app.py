@@ -63,10 +63,26 @@ if st.session_state.screen in ['overall_screen','season_screen']:
         st.rerun()
 
     if st.session_state.screen == 'overall_screen':
+        # show dataframe of each season winner
         st.title('Overall Record')
-        response = requests.get('http://127.0.0.1:7000/season_winner')
-        df = pd.DataFrame(response.json())
+        response = requests.get('http://127.0.0.1:7000/season_winner').json()
+        df = pd.DataFrame(response)
         st.dataframe(df,hide_index=True,height = len(df)*35+38)
+        st.divider()
+
+        # this will show Individual batting records of IPL
+        st.title('Individual Batting Record')
+        # most carrer runs
+        st.subheader('Most Carrer Runs')
+        response = requests.get('http://127.0.0.1:7000/overall_record').json()
+        df_carrer_runs = pd.DataFrame(response['Batting']['most_carrer_runs']).reset_index().rename(
+            columns={'index': 'Batsman', 'runs_batter': 'Runs', 'match_id': 'Innings'})
+        df_carrer_runs.index += 1
+        st.dataframe(df_carrer_runs)
+
+        # Highest individual score
+        st.subheader('Highest Individual Score')
+
 
     elif st.session_state.screen == 'season_screen':
         season_option = st.session_state.season
