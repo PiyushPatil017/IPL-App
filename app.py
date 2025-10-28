@@ -72,17 +72,41 @@ if st.session_state.screen in ['overall_screen','season_screen']:
 
         # this will show Individual batting records of IPL
         st.title('Individual Batting Record')
-        # most carrer runs
-        st.subheader('Most Carrer Runs')
+        # most career runs
+        st.subheader('Most Career Runs')
         response = requests.get('http://127.0.0.1:7000/overall_record').json()
-        df_carrer_runs = pd.DataFrame(response['Batting']['most_carrer_runs']).reset_index().rename(
-            columns={'index': 'Batsman', 'runs_batter': 'Runs', 'match_id': 'Innings'})
-        df_carrer_runs.index += 1
-        st.dataframe(df_carrer_runs)
+        df_career_runs = pd.DataFrame(response['Batting']['most_career_runs'])
+        df_career_runs.index = df_career_runs.index.astype('int')
+        df_career_runs.index += 1
+        st.dataframe(df_career_runs)
 
         # Highest individual score
         st.subheader('Highest Individual Score')
+        df_highest_score = pd.DataFrame(response['Batting']['highest_individual_score'])
+        df_highest_score.index = df_highest_score.index.astype('int')
+        df_highest_score.index += 1
+        st.dataframe(df_highest_score)
 
+        # Most centuries
+        st.subheader('Most Centuries')
+        df_most_centuries= pd.DataFrame(response['Batting']['most_centuries'])
+        df_most_centuries.index = df_most_centuries.index.astype('int')
+        df_most_centuries.index += 1
+        st.dataframe(df_most_centuries)
+
+        # Most career sixes
+        st.subheader('Most Career Sixes')
+        df_most_sixes = pd.DataFrame(response['Batting']['most_career_six'])
+        df_most_sixes.index = df_most_sixes.index.astype('int')
+        df_most_sixes.index += 1
+        st.dataframe(df_most_sixes)
+
+        # Most career Fours
+        st.subheader('Most Career Fours')
+        df_most_fours = pd.DataFrame(response['Batting']['most_career_four'])
+        df_most_fours.index = df_most_fours.index.astype('int')
+        df_most_fours.index += 1
+        st.dataframe(df_most_fours)
 
     elif st.session_state.screen == 'season_screen':
         season_option = st.session_state.season
